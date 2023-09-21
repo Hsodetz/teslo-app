@@ -4,8 +4,7 @@ import 'package:teslo_shop/config/config.dart';
 import 'package:teslo_shop/config/router/app_router.dart';
 
 void main() {
-  const ProviderScope(child: MainApp());
-  
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends StatelessWidget {
