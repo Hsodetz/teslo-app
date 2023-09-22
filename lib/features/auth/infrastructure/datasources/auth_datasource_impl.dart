@@ -23,7 +23,7 @@ class AuthDataSourceImpl implements AuthDataSource {
   Future<User> login(String email, String password) async{
 
     try {
-      final response = await dio.post('/auth/api', data: {
+      final response = await dio.post('/auth/login', data: {
         'email': email,
         'password': password,
       });
