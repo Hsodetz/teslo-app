@@ -33,13 +33,16 @@ class AuthDataSourceImpl implements AuthDataSource {
       return user;
       
     } on DioException catch(e) {
-      if (e.response?.statusCode == 401) throw WrongCredentials();
-      if (e.type == DioExceptionType.connectionTimeout) throw ConnectionTimeOut();
+      // if (e.response?.statusCode == 401) throw WrongCredentials();
+      if (e.response?.statusCode == 401) throw CustomError(e.response?.data['message'] ?? 'Credenciales incorrectas');
 
-      throw CustomError('Algo ha ocurrido!', 1);
+      //if (e.type == DioExceptionType.connectionTimeout) throw ConnectionTimeOut();
+      if (e.type == DioExceptionType.connectionTimeout) throw CustomError('Revisar conexión a internet');
+
+      throw Exception();
 
     } catch (e) {
-       throw CustomError('Algo ha ocurrido!', 1);
+      throw Exception();
     }
 
   }
