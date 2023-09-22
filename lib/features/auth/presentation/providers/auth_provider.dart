@@ -5,6 +5,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:teslo_shop/features/auth/domain/domain.dart';
 import 'package:teslo_shop/features/auth/infrastructure/errors/auth_errors.dart';
+import 'package:teslo_shop/features/shared/infrastructure/services/key_value_storage_service.dart';
+import 'package:teslo_shop/features/shared/infrastructure/services/key_value_storage_service_impl.dart';
 
 import '../../infrastructure/repositories/auth_repository.impl.dart';
 
@@ -38,8 +40,12 @@ class AuthState {
 class AuthNotifier extends StateNotifier<AuthState> {
 
   final AuthRepository authRepository;
+  final KeyValueStorageService keyValueStorageService;
 
-  AuthNotifier({required this.authRepository}): super(AuthState());
+  AuthNotifier({
+    required this.authRepository,
+    required this.keyValueStorageService,
+  }): super(AuthState());
 
   Future<void> loginUser(String email, String password) async{
 
@@ -70,10 +76,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     
   }
 
-  void _setLoggedUser(User user) {
+  void _setLoggedUser(User user) async{
 
-    // TODO: se necesita guardar el token fisicamente
+    //guardar el token fisicamente
+    await keyValueStorageService.setKeyValue('token', user.token);
 
+    // nuevo estado o cambio de estado como se prefiera ver
     state = state.copyWith(
       user: user,
       authStatus: AuthStatus.authenticated,
@@ -82,7 +90,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout([String? errorMessage]) async{
-    //TODO: Limpiar token al hacer logout
+    //Limpiar token al hacer logout
+    await keyValueStorageService.removeKey('token');
+
+    // nuevo estado o cambio de estado como se prefiera ver
     state = state.copyWith(
       authStatus: AuthStatus.noAuthenticated,
       user: null,
@@ -100,8 +111,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 
   final AuthRepositoryImpl authRepositoryImpl = AuthRepositoryImpl();
+  final keyValueStorageService = KeyValueStorageServiceImpl();
+   
 
 
 
-  return AuthNotifier(authRepository: authRepositoryImpl);
+  return AuthNotifier(
+    authRepository: authRepositoryImpl,
+    keyValueStorageService: keyValueStorageService,
+  );
 });
