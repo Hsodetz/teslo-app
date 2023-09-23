@@ -3,8 +3,12 @@ import 'package:teslo_shop/features/auth/auth.dart';
 import 'package:teslo_shop/features/products/products.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/splashAuthScreen',
   routes: [
+    GoRoute(
+      path: '/splashAuthScreen',
+      builder: (context, state) => const CheckAuthStatusScreen(),
+    ),
 
     ///* Auth Routes
     GoRoute(
@@ -22,5 +26,6 @@ final appRouter = GoRouter(
       builder: (context, state) => const ProductsScreen(),
     ),
   ],
+
   ///! TODO: Bloquear si no se está autenticado de alguna manera
 );
