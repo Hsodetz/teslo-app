@@ -16,8 +16,6 @@ class AuthDataSourceImpl implements AuthDataSource {
 
   @override
   Future<User> checkAuthStatus(String token) async{
-
-    print('checkoutstatusx');
     
     try {
       final response = await dio.get('/auth/check-status', 

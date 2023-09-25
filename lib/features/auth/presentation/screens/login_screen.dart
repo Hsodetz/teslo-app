@@ -67,7 +67,7 @@ class _LoginForm extends ConsumerWidget {
 
     final LoginFormState loginFormState = ref.watch(loginFormProvider);
 
-    final x = ref.listen(authProvider, (previous, next) { 
+    ref.listen(authProvider, (previous, next) { 
       if (next.errorMessage.isEmpty) return;
 
       showSnackbar(context, next.errorMessage);
@@ -106,11 +106,8 @@ class _LoginForm extends ConsumerWidget {
             child: CustomFilledButton(
               text: 'Ingresar',
               buttonColor: Colors.black,
-              onPressed: (){
-
-                ref.read(loginFormProvider.notifier).onFormSubmit();
-
-              },
+              onPressed: loginFormState.isPosting ? null : ref.read(loginFormProvider.notifier).onFormSubmit,
+         
             )
           ),
 
@@ -121,7 +118,7 @@ class _LoginForm extends ConsumerWidget {
             children: [
               const Text('¿No tienes cuenta?'),
               TextButton(
-                onPressed: ()=> context.push('/register'), 
+                onPressed: () => context.push('/register'), 
                 child: const Text('Crea una aquí')
               )
             ],

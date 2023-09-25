@@ -1,9 +1,19 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:teslo_shop/config/router/app_router_notifier.dart';
 import 'package:teslo_shop/features/auth/auth.dart';
+import 'package:teslo_shop/features/auth/presentation/providers/auth_provider.dart';
 import 'package:teslo_shop/features/products/products.dart';
 
-final appRouter = GoRouter(
+
+// creamos un provider para manejar la proteccion de rutas 
+final goRouterProvider = Provider((ref) {
+
+  final goRouterNotifier = ref.read(goRouterNotifierProvider);
+
+  return GoRouter(
   initialLocation: '/splashAuthScreen',
+  refreshListenable: goRouterNotifier,
   routes: [
     GoRoute(
       path: '/splashAuthScreen',
@@ -27,5 +37,33 @@ final appRouter = GoRouter(
     ),
   ],
 
-  ///! TODO: Bloquear si no se está autenticado de alguna manera
-);
+  // Bloquear si no se está autenticado de alguna manera
+
+  redirect: (context, state) {
+
+    final isGoingTo = state.subloc;
+    final authStatus = goRouterNotifier.authStatus;
+
+    print('$isGoingTo');
+
+    if (isGoingTo == '/splashAuthScreen' && authStatus == AuthStatus.checking) return null;
+
+    if (authStatus == AuthStatus.noAuthenticated) {
+      if (isGoingTo == '/login' || isGoingTo == '/register') return null;
+
+      return '/login';
+    }
+
+    if (authStatus == AuthStatus.authenticated) {
+      if (isGoingTo == '/login' || isGoingTo == '/register' || isGoingTo == '/splashAuthScreen') {
+        return '/';
+      }
+    }
+
+    
+    return null;
+  },
+
+  );
+});
+
