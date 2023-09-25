@@ -100,6 +100,7 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
       email: email,
       password: password,
       isValid: Formz.validate([email, password]),
+      
     );
   }
   
