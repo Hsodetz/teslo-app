@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:teslo_shop/config/router/app_router_notifier.dart';
 import 'package:teslo_shop/features/auth/auth.dart';
 import 'package:teslo_shop/features/auth/presentation/providers/auth_provider.dart';
+import 'package:teslo_shop/features/products/presentation/screens/product_screen.dart';
 import 'package:teslo_shop/features/products/products.dart';
 
 
@@ -35,6 +36,11 @@ final goRouterProvider = Provider((ref) {
       path: '/',
       builder: (context, state) => const ProductsScreen(),
     ),
+
+    GoRoute(
+      path: '/product/:id',
+      builder: (context, state) => ProductScreen(productId: state.params['id'] ?? 'no-id'),
+    ),
   ],
 
   // Bloquear si no se está autenticado de alguna manera
@@ -44,7 +50,7 @@ final goRouterProvider = Provider((ref) {
     final isGoingTo = state.subloc;
     final authStatus = goRouterNotifier.authStatus;
 
-    print('$isGoingTo');
+    //print('$isGoingTo');
 
     if (isGoingTo == '/splashAuthScreen' && authStatus == AuthStatus.checking) return null;
 
@@ -59,7 +65,6 @@ final goRouterProvider = Provider((ref) {
         return '/';
       }
     }
-
     
     return null;
   },
