@@ -60,7 +60,7 @@ class ProductFormState {
 }
 
 class ProductFormNotifier extends StateNotifier<ProductFormState> {
-  final Future<Product> Function(Map<String, dynamic> productLike)? onSubmitCallback;
+  final Future<bool> Function(Map<String, dynamic> productLike)? onSubmitCallback;
 
   ProductFormNotifier({
     this.onSubmitCallback,
@@ -102,8 +102,7 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
     };
 
     try {
-      await onSubmitCallback!(productLike);
-      return true;
+      return await onSubmitCallback!(productLike);
     } catch (e) {
       return false;
     }
@@ -184,7 +183,9 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
 final productFormProvider = StateNotifierProvider.autoDispose.family<ProductFormNotifier, ProductFormState, Product>(
   (ref, product) {
 
-    final createUpdateCallback = ref.watch(productsRepositoryProvider).createUpdateProduct;
+    //final createUpdateCallback = ref.watch(productsRepositoryProvider).createUpdateProduct;
+
+    final createUpdateCallback = ref.watch(productsProvider.notifier).createOrUpdateProduct;
 
      return ProductFormNotifier(
       product: product,
