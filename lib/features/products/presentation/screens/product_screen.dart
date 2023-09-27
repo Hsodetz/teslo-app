@@ -6,7 +6,6 @@ import 'package:teslo_shop/features/products/domain/domain.dart';
 import 'package:teslo_shop/features/products/presentation/providers/product_provider.dart';
 import 'package:teslo_shop/features/products/presentation/providers/providers.dart';
 import 'package:teslo_shop/features/shared/shared.dart';
-import 'package:teslo_shop/features/shared/widgets/full_screen_loader.dart';
 
 class ProductScreen extends ConsumerWidget {
   final String productId;
@@ -225,7 +224,7 @@ class _SizeSelector extends StatelessWidget {
       selected: Set.from( selectedSizes ),
       onSelectionChanged: (newSelection) {
         FocusScope.of(context).unfocus();
-        print(newSelection);
+        //print(newSelection);
         onSizesChanged(List.from(newSelection));
       },
       multiSelectionEnabled: true,
