@@ -7,7 +7,7 @@ import 'package:teslo_shop/features/auth/infrastructure/errors/auth_errors.dart'
 import 'package:teslo_shop/features/auth/infrastructure/mappers/user_mapper.dart';
 
 class AuthDataSourceImpl implements AuthDataSource {
-
+ 
   final dio = Dio(
     BaseOptions(
       baseUrl: Environment.apiUrl,
@@ -72,8 +72,21 @@ class AuthDataSourceImpl implements AuthDataSource {
   }
 
   @override
-  Future<User> register(String email, String password, String fullName) {
-    throw UnimplementedError();
+  Future<User> register(String email, String password, String fullName) async{
+    try {
+      final response = await dio.post('/auth/register', data: {
+        'fullName': fullName,
+        'email': email,
+        'password': password,
+      });
+
+      final user = UserMapper.userJsonToEntity(response.data);
+
+      return user;
+
+    } catch (e) {
+      throw Exception();
+    }
   }
 
 }
