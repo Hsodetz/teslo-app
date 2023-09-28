@@ -17,7 +17,7 @@ class CameraGalleryServiceImpl implements CameraGalleryService {
 
     if (photo == null) return null;
 
-    print(photo.path);
+    //print(photo.path);
 
     return photo.path;
 
@@ -35,7 +35,7 @@ class CameraGalleryServiceImpl implements CameraGalleryService {
 
     if (photo == null) return null;
 
-    print(photo.path);
+    //print(photo.path);
 
     return photo.path;
 

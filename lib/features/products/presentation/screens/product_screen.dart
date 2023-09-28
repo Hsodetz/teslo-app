@@ -262,7 +262,7 @@ class _GenderSelector extends StatelessWidget {
         selected: { selectedGender },
         onSelectionChanged: (newSelection) {
           FocusScope.of(context).unfocus();
-          print(newSelection.first);
+          //print(newSelection.first);
           onGenderChanged(newSelection.first);
         },
       ),

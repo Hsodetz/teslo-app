@@ -3,27 +3,26 @@ import 'package:teslo_shop/features/products/domain/datasources/products.datasou
 import 'package:teslo_shop/features/products/domain/entities/product.dart';
 import 'package:teslo_shop/features/products/infrastructure/errors/product_errors.dart';
 import 'package:teslo_shop/features/products/infrastructure/mappers/product_mapper.dart';
+import 'package:teslo_shop/features/shared/infrastructure/services/dio_http_adapter_service_impl.dart';
 
-import '../../../../config/config.dart';
 
 class ProductsDatasourceImpl extends ProductsDatasource {
-  late final Dio dio;
+
+  final DioHttpAdapterServiceImpl _dio;
   final String accessToken;
+  
 
-  ProductsDatasourceImpl({required this.accessToken})
-      : dio = Dio(
-          BaseOptions(baseUrl: Environment.apiUrl, headers: {
-            'Authorization': 'Bearer $accessToken',
-          }),
-        );
+  ProductsDatasourceImpl({required this.accessToken}) 
+      : _dio = DioHttpAdapterServiceImpl(accessToken);
 
+  
   Future<String> _uploadFile(String path) async {
     try {
       final fileName = path.split('/').last;
       final FormData data = FormData.fromMap(
           {'file': MultipartFile.fromFileSync(path, filename: fileName)});
 
-      final respose = await dio.post('/files/product', data: data);
+      final respose = await _dio.post('/files/product', data: data);
 
       return respose.data['image'];
     } catch (e) {
@@ -56,7 +55,7 @@ class ProductsDatasourceImpl extends ProductsDatasource {
       productLike.remove('id');
       productLike['images'] = await _uploadPhotos( productLike['images'] );
 
-      final response = await dio.request(
+      final response = await _dio.request(
         url, 
         data: productLike, 
         options: Options(method: method)
@@ -72,7 +71,9 @@ class ProductsDatasourceImpl extends ProductsDatasource {
   @override
   Future<Product> getProductById(String id) async {
     try {
-      final response = await dio.get('/products/$id');
+      //final response = await dio.get('/products/$id');
+      final response = await _dio.get('/products/$id');
+
       final product = ProductMapper.jsonToEntity(response.data);
 
       return product;
@@ -88,7 +89,7 @@ class ProductsDatasourceImpl extends ProductsDatasource {
   @override
   Future<List<Product>> getProductsByPage(
       {int limit = 10, int offset = 0}) async {
-    final response = await dio.get('/products?limit=$limit&offset=$offset');
+    final response = await _dio.get('/products?limit=$limit&offset=$offset');
     final List<Product> products = [];
 
     for (final product in response.data ?? []) {
