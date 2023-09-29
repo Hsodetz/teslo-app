@@ -5,6 +5,8 @@ import 'package:teslo_shop/features/products/infrastructure/errors/product_error
 import 'package:teslo_shop/features/products/infrastructure/mappers/product_mapper.dart';
 import 'package:teslo_shop/features/shared/infrastructure/services/dio_http_adapter_service_impl.dart';
 
+import '../../../auth/infrastructure/errors/auth_errors.dart';
+
 
 class ProductsDatasourceImpl extends ProductsDatasource {
 
@@ -63,6 +65,13 @@ class ProductsDatasourceImpl extends ProductsDatasource {
 
       final product = ProductMapper.jsonToEntity(response.data);
       return product;
+    } on DioException catch(e) {
+      if (e.response?.statusCode == 403) throw CustomError('No esta autorizado para realizar esta acción');
+
+      if (e.type == DioExceptionType.connectionTimeout) throw CustomError('Revisar conexión a internet');
+
+      throw Exception();
+
     } catch (e) {
       throw Exception();
     }

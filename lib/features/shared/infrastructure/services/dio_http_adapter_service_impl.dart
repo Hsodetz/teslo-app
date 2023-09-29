@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:teslo_shop/config/constants/environment.dart';
 import 'package:teslo_shop/features/shared/infrastructure/services/dio_http_adapter_service.dart';
 
+import '../../../auth/infrastructure/errors/auth_errors.dart';
+
 class DioHttpAdapterServiceImpl implements DioHttpAdapterService {
 
   late final Dio _dio;
@@ -18,10 +20,10 @@ class DioHttpAdapterServiceImpl implements DioHttpAdapterService {
     );
 
   @override
-  Future<Response> get(String url, {Map<String, dynamic>? queryParameters}) async{
+  Future<Response> get(String url, {Map<String, dynamic>? queryParameters, Options? options}) async{
     
     try {
-      final response = await _dio.get(url, queryParameters: queryParameters);
+      final response = await _dio.get(url, queryParameters: queryParameters, options: options);
       return response;
     } catch (error) {
 
@@ -44,15 +46,22 @@ class DioHttpAdapterServiceImpl implements DioHttpAdapterService {
   }
   
   @override
-  Future request(String url, {required Map<String, dynamic> data, Options? options}) async{
+  Future<Response> request(String url, {required Map<String, dynamic> data, Options? options}) async{
    
      try {
       final response = await _dio.request(url, data: data, options: options);
       return response;
 
-    } catch (error) {
+    } on DioException catch(e) {
+      if (e.response?.statusCode == 403) throw CustomError('No esta autorizado para realizar esta acción');
+
+      if (e.type == DioExceptionType.connectionTimeout) throw CustomError('Revisar conexión a internet');
 
       throw Exception();
+
+    } catch (e) {
+
+      throw Exception(e.toString());
     
     }
 
