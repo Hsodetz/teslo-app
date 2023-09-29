@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 import 'package:teslo_shop/features/auth/presentation/providers/auth_provider.dart';
+import 'package:teslo_shop/features/shared/infrastructure/inputs/confirm_password.dart';
 import 'package:teslo_shop/features/shared/infrastructure/inputs/name.dart';
 import 'package:teslo_shop/features/shared/shared.dart';
 
@@ -13,7 +14,7 @@ class RegisterFormState {
   final Name name;
   final Email email;
   final Password password;
-  final Password confirmPassword;
+  final ConfirmPassword confirmPassword;
 
   RegisterFormState({
     this.isPosting = false, 
@@ -22,7 +23,7 @@ class RegisterFormState {
     this.name = const Name.pure(), 
     this.email = const Email.pure(), 
     this.password = const Password.pure(),
-    this.confirmPassword = const Password.pure(),
+    this.confirmPassword = const ConfirmPassword.pure(),
   });
 
   RegisterFormState copyWith({
@@ -32,7 +33,7 @@ class RegisterFormState {
     Name? name,
     Email? email,
     Password? password,
-    Password? confirmPassword,
+    ConfirmPassword? confirmPassword,
   }) => RegisterFormState(
     isPosting: isPosting ?? this.isPosting,
     isFormPosted: isFormPosted ?? this.isFormPosted,
@@ -76,7 +77,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
   }
 
   onConfirmPasswordChange(String value) {
-    final newConfirmPassword = Password.dirty(value);
+    final newConfirmPassword = ConfirmPassword.dirty(value);
     state = state.copyWith(
     confirmPassword: newConfirmPassword, 
     isValid: Formz.validate([newConfirmPassword, state.password, state.email, state.name]),
@@ -85,6 +86,10 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
 
   onFormRegisterSubmit() async{
     _touchAllFields();
+
+    if(state.password.value  != state.confirmPassword.value) {
+      return onConfirmPasswordChange('iguales');
+    }
 
     if (!state.isValid) return;
 
@@ -104,7 +109,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     final name = Name.dirty(state.name.value);
     final email = Email.dirty(state.email.value);
     final password = Password.dirty(state.password.value);
-    final confirmPassword = Password.dirty(state.confirmPassword.value);
+    final confirmPassword = ConfirmPassword.dirty(state.confirmPassword.value);
   
     // ahora aplicamos el nuevo estado
     state = state.copyWith(
